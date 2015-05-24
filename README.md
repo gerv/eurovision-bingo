@@ -31,9 +31,9 @@ Edit the constants at the top of the source to change the year of lyrics used,
 or the number of cards to generate. If you generate lots, though, you'll get
 repeated words. You may or may not care about this.
 
-Edit cards.odt in LibreOffice, being careful to preserve the special comments,
-in other to make the cards look smarter than they currently do, or add your
-own explanatory text at the top.
+Edit card-template.odt in LibreOffice, being careful to preserve the special
+comments, in order to make the cards look smarter than they currently do, or
+add your own explanatory text at the top.
 
 This software was developed on Linux; I have no idea whether it'll work on any
 other operating system. I see no reason it shouldn't, although it does use

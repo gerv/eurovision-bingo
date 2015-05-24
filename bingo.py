@@ -8,11 +8,12 @@ import os
 from appy.pod.renderer import Renderer
 import random
 import copy
+import math
 
 NUMBER_OF_CARDS = 15
 # This should normally be the previous year; if not, change the output filename
 # at the bottom
-YEAR = 2014
+YEAR = 2015
 
 occurrence_names = {}
 frequency_table = []
@@ -26,7 +27,7 @@ common_words = ['the', 'to', 'and', 'it', 'i', 'you', 'a', 'of', 'in', 'me',
                 'down', 'too', "it's", 'has', 'way', 'am', 'as',
                 'than', 'were', 'who', 'been','an',
                 'could', 'them', 'they', 'myself',
-                'off', 'by']
+                'off', 'by', 'or']
 
 def process(country, text):
     words = {}
@@ -63,31 +64,47 @@ for word in occurrence_names:
     count = len(occurrence_names[word])
     frequency_table[count].append(word)
 
-print frequency_table
-print frequency_table[6]
+# Print word lists
+print "Word lists:"
+for i in range(0, len(files) + 1):
+    if len(frequency_table[i]):
+        print str(i) + ": " + str(frequency_table[i])
 
 # We have five buckets, each of which will fill five squares on any card.
-# We fill the buckets with words of different frequencies. 
-buckets = [frequency_table[2],
-           frequency_table[3],
-           frequency_table[4],
-           frequency_table[5] + frequency_table[6],
-           frequency_table[7] + frequency_table[8] + frequency_table[9]]
+# We fill the buckets with words of different frequencies.
+# If you want more of a challenge, add or switch in frequency_table[1],
+# which is all the words which only came up once.
+orig_buckets = [set(frequency_table[2]),
+                set(frequency_table[3]),
+                set(frequency_table[4]),
+                set(frequency_table[5] + frequency_table[6]),
+                set(frequency_table[7] + frequency_table[8] + frequency_table[9])]
+
+buckets = copy.deepcopy(orig_buckets)
+
+print "\nBucket sizes:"
+minsize = 999
+for i in range(len(orig_buckets)):
+    print len(orig_buckets[i])
+    minsize = min(minsize, len(orig_buckets[i]))
 
 def make_card(card_template, buckets):
+    
     card = copy.deepcopy(card_template)
-    
     side_length = len(card)    
-    cardwords = []
     
-    for i in range(side_length):
-        cardwords.append(random.sample(set(buckets[i]), side_length))
-
     for i in range(side_length):
         for j in range(side_length):
-            setidx = card[i][j]
-            if isinstance(setidx, int):
-                card[i][j] = cardwords[setidx - 1][i]
+            bucketidx = card[i][j]
+            if isinstance(bucketidx, int):
+                                
+                # Replenish the stash of words if necessary
+                if not len(buckets[bucketidx]):
+                    buckets[bucketidx] = orig_buckets[bucketidx].copy()
+                
+                word = random.sample(buckets[bucketidx], 1)[0]
+                card[i][j] = word
+                buckets[bucketidx].remove(word)
 
     # print card
     return card
@@ -95,12 +112,13 @@ def make_card(card_template, buckets):
 # This defines which words from which buckets go where; the number is the
 # bucket number. "LOVE" is a 'free' square - everyone gets it :-)
 # It is arranged so that, to get a line, you have to have spotted a word from
-# each bucket. (With LOVE counting as bucket 5, most common.)
-card_template = [[2, 4, 1, 5, 3],
-                 [5, 3, 2, 4, 1],
-                 [4, 1, "LOVE", 3, 2],
-                 [3, 2, 4, 1, 5],
-                 [1, 5, 3, 2, 4]]
+# each bucket, with LOVE counting as bucket 4 (most common).
+x = "LOVE"
+card_template = [[1, 3, 0, 4, 2],
+                 [4, 2, 1, 3, 0],
+                 [3, 0, x, 2, 1],
+                 [2, 1, 3, 0, 4],
+                 [0, 4, 2, 1, 3]]
 
 cards = []            
 for i in range(NUMBER_OF_CARDS):
