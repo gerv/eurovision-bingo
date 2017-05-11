@@ -13,7 +13,7 @@ import math
 NUMBER_OF_CARDS = 15
 # This should normally be the previous year; if not, change the output filename
 # at the bottom
-YEAR = 2015
+YEAR = 2016
 
 occurrence_names = {}
 frequency_table = []
@@ -25,17 +25,23 @@ common_words = ['the', 'to', 'and', 'it', 'i', 'you', 'a', 'of', 'in', 'me',
                 'this', 'out', 'why', 'are', 'away', 'go', 'then', 'not', 'our',
                 'got', 'only', 'come', 'had', 'was', 'would', 'how',
                 'down', 'too', "it's", 'has', 'way', 'am', 'as',
-                'than', 'were', 'who', 'been','an',
-                'could', 'them', 'they', 'myself',
-                'off', 'by', 'or']
+                'than', 'were', 'who', 'been','an', 'wont', 'dont', 'thru', 
+                'could', 'them', 'they', 'myself', 'bu', 'ba', 'da', 'cuz', 
+                'off', 'by', 'or', 'o', 'u', 'its', 'aah', 'till', 'yay',
+                'love'] # Love is included another way
 
 def process(country, text):
     words = {}
     wordlist = re.split(r"[-\(\)\s\.,\?:!\"]+", text)
     apos = re.compile("\xe2\x80|'|\xc2\xb4");
+    ooohhh = re.compile(r"^[oh]+$");
     for word in wordlist:
         word = word.lower()
+        # Remove words with apostrophes
         if apos.search(word):
+            continue
+        # All forms of "ooohhh"
+        if ooohhh.search(word):
             continue
         
         words[word.lower()] = 1
@@ -77,8 +83,11 @@ for i in range(0, len(files) + 1):
 orig_buckets = [set(frequency_table[2]),
                 set(frequency_table[3]),
                 set(frequency_table[4]),
-                set(frequency_table[5] + frequency_table[6]),
-                set(frequency_table[7] + frequency_table[8] + frequency_table[9])]
+                set(frequency_table[5]  + frequency_table[6]),
+                set(frequency_table[7]  + frequency_table[8] +
+                    frequency_table[9]  + frequency_table[10] +
+                    frequency_table[11] + frequency_table[12] +
+                    frequency_table[13] + frequency_table[14])]
 
 buckets = copy.deepcopy(orig_buckets)
 

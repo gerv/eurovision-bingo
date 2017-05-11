@@ -24,8 +24,9 @@ least:
 
 * Python
 * LibreOffice
-* Appy Pod (Python Open Document) library
-  http://www.appyframework.org/pod.html
+* [Appy Pod (Python Open Document) library](http://www.appyframework.org/pod.html)
+
+  `pip install appy`
 
 Edit the constants at the top of the source to change the year of lyrics used,
 or the number of cards to generate. If you generate lots, though, you'll get
