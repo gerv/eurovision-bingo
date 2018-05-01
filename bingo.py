@@ -13,7 +13,7 @@ import math
 NUMBER_OF_CARDS = 15
 # This should normally be the previous year; if not, change the output filename
 # at the bottom
-YEAR = 2016
+YEAR = 2017
 
 occurrence_names = {}
 frequency_table = []
@@ -83,8 +83,9 @@ for i in range(0, len(files) + 1):
 orig_buckets = [set(frequency_table[2]),
                 set(frequency_table[3]),
                 set(frequency_table[4]),
-                set(frequency_table[5]  + frequency_table[6]),
-                set(frequency_table[7]  + frequency_table[8] +
+                set(frequency_table[5]),
+                set(frequency_table[6]  + frequency_table[7]  +
+                    frequency_table[8]  +
                     frequency_table[9]  + frequency_table[10] +
                     frequency_table[11] + frequency_table[12] +
                     frequency_table[13] + frequency_table[14])]
@@ -101,16 +102,18 @@ def make_card(card_template, buckets):
     
     card = copy.deepcopy(card_template)
     side_length = len(card)    
-    
+
+    # Replenish the stash of words if necessary
+    # Refilling at this point prevents duplicates on the same board
+    for i in range(side_length):
+        if len(buckets[i]) < 5:
+            buckets[i] = orig_buckets[i].copy()
+
     for i in range(side_length):
         for j in range(side_length):
             bucketidx = card[i][j]
             if isinstance(bucketidx, int):
-                                
-                # Replenish the stash of words if necessary
-                if not len(buckets[bucketidx]):
-                    buckets[bucketidx] = orig_buckets[bucketidx].copy()
-                
+
                 word = random.sample(buckets[bucketidx], 1)[0]
                 card[i][j] = word
                 buckets[bucketidx].remove(word)
