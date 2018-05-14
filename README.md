@@ -12,6 +12,10 @@ normally those from the previous year of the competition, and work out the
 frequency of occurrence of each word. It will then generate Bingo cards, with
 sets of words of different levels of commonness.
 
+Alternatively, you can use "cards-for-any-year.odt", which consists of popular
+words from 2013 to 2017 inclusive, with some element of selection for being
+easy to hear and being poppy/Eurovision-y. It also has a personal scoresheet.
+
 The middle square, sometimes marked FREE in some versions of Bingo, is marked
 LOVE in Eurovision Bingo - i.e. basically the same thing. :-)
 
@@ -30,11 +34,13 @@ least:
 
 Edit the constants at the top of the source to change the year of lyrics used,
 or the number of cards to generate. If you generate lots, though, you'll get
-repeated words. You may or may not care about this.
+repeated words. You may or may not care about this. Use year 0 tor regenerate
+the "any year" sheets.
 
-Edit card-template.odt in LibreOffice, being careful to preserve the special
-comments, in order to make the cards look smarter than they currently do, or
-add your own explanatory text at the top.
+Edit card-template.odt (or card-template-generic.odt for "any year") in
+LibreOffice, being careful to preserve the special comments, in order to make
+the cards look smarter than they currently do, or add your own explanatory text
+at the top.
 
 This software was developed on Linux; I have no idea whether it'll work on any
 other operating system. I see no reason it shouldn't, although it does use
@@ -61,4 +67,4 @@ Prizes are left as an exercise for the reader.
 Have fun!
 
 Gerv
-First Sunday Before Eurovision, 59 AE (2015 AD)
+First Monday After Eurovision, 63 AE (2018 AD)

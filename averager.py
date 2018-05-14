@@ -1,23 +1,17 @@
 #!/usr/bin/python
 #
-# To do: make number of cards configurable on command line
-# Make contents of selection buckets configurable
+# This code calculates average frequencies across a set of years of lyrics,
+# to enable words to be manually chosen for the "any year" cards.
 
 import re
 import os
-from appy.pod.renderer import Renderer
 import random
 import copy
 import math
 
-NUMBER_OF_CARDS = 10
-TEMPLATE = 'card-template-generic.odt'
-# This should normally be the previous year; if not, change the output filename
-# at the bottom
-YEAR = 0
+# total_occurrence_count = word -> count across all years
+total_occurrence_count = {}
 
-occurrence_names = {}
-frequency_table = []
 common_words = ['the', 'to', 'and', 'it', 'i', 'you', 'a', 'of', 'in', 'me',
                 'my', 'is', 'for', 'all', 'can', 'on', 'we', 'that', 'so',
                 'now', 'like', 'up', 'your', 'one', 'if', 'be', 'have', 'but',
@@ -31,7 +25,7 @@ common_words = ['the', 'to', 'and', 'it', 'i', 'you', 'a', 'of', 'in', 'me',
                 'off', 'by', 'or', 'o', 'u', 'its', 'aah', 'till', 'yay',
                 'love'] # Love is included another way
 
-def process(country, text):
+def process(occurrence_names, country, text):
     words = {}
     wordlist = re.split(r"[-\(\)\s\.,\?:!\"]+", text)
     apos = re.compile("\xe2\x80|'|\xc2\xb4");
@@ -53,27 +47,42 @@ def process(country, text):
             
         occurrence_names[word].append(country);
 
-for root, dirs, files in os.walk('lyrics/' + str(YEAR)):
-    for filename in files:
-        country = filename[:-4]
+    return occurrence_names
+
+
+years = (2013, 2014, 2015, 1016, 2017)
+for year in years:
+    occurrence_names = {}
+    
+    for root, dirs, files in os.walk('lyrics/' + str(year)):
+        for filename in files:
+            country = filename[:-4]
+            
+            file = open("lyrics/" + str(year) + "/" + filename, "r");
+            text = file.read()
+            occurrence_names = process(occurrence_names, country, text)
+
+    for word in occurrence_names:
+        if word in common_words:
+            continue
         
-        file = open("lyrics/" + str(YEAR) + "/" + filename, "r");
-        text = file.read()
-        process(country, text)
+        count = len(occurrence_names[word])
+        
+        if not word in total_occurrence_count:
+            total_occurrence_count[word] = 0
+
+        total_occurrence_count[word] = total_occurrence_count[word] + count
 
 # Make a frequency table
-frequency_table = [[] for i in range(0, 26)]
+frequency_table = [[] for i in range(0, 25)]
 
-for word in occurrence_names:
-    if word in common_words:
-        continue
-    
-    count = len(occurrence_names[word])
-    frequency_table[count].append(word)
+for word in total_occurrence_count:
+    avg = int(math.floor(total_occurrence_count[word]/len(years)))
+    frequency_table[avg].append(word)
 
 # Print word lists
 print "Word lists:"
-for i in range(0, 26):
+for i in range(0, len(files) + 1):
     if len(frequency_table[i]):
         print str(i) + ": " + str(frequency_table[i])
 
@@ -99,45 +108,3 @@ for i in range(len(orig_buckets)):
     print len(orig_buckets[i])
     minsize = min(minsize, len(orig_buckets[i]))
 
-def make_card(card_template, buckets):
-    
-    card = copy.deepcopy(card_template)
-    side_length = len(card)    
-
-    # Replenish the stash of words if necessary
-    # Refilling at this point prevents duplicates on the same board
-    for i in range(side_length):
-        if len(buckets[i]) < 5:
-            buckets[i] = orig_buckets[i].copy()
-
-    for i in range(side_length):
-        for j in range(side_length):
-            bucketidx = card[i][j]
-            if isinstance(bucketidx, int):
-
-                word = random.sample(buckets[bucketidx], 1)[0]
-                card[i][j] = word
-                buckets[bucketidx].remove(word)
-
-    # print card
-    return card
-
-# This defines which words from which buckets go where; the number is the
-# bucket number. "LOVE" is a 'free' square - everyone gets it :-)
-# It is arranged so that, to get a line, you have to have spotted a word from
-# each bucket, with LOVE counting as bucket 4 (most common).
-x = "LOVE"
-card_template = [[1, 3, 0, 4, 2],
-                 [4, 2, 1, 3, 0],
-                 [3, 0, x, 2, 1],
-                 [2, 1, 3, 0, 4],
-                 [0, 4, 2, 1, 3]]
-
-cards = []            
-for i in range(NUMBER_OF_CARDS):
-    cards.append(make_card(card_template, buckets))
-
-renderer = Renderer(TEMPLATE,
-                    globals(),
-                    'cards-for-' + str(YEAR + 1) + '.odt')
-renderer.run()    
